@@ -3,16 +3,16 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle:
-description:
-author: John Doe
-language:
+title: 天非
+subtitle: Teffy
+description: 一个不努力的码农
+author: teffy
+language: zh-Hans
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: http://github.com/teffy
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -74,6 +74,8 @@ pagination_dir: page
 ## Themes: https://hexo.io/themes/
 # theme: landscape
 theme: hexo-theme-next
+
+avatar: http://p1cycpoti.bkt.clouddn.com/blog/imgs/avatar.png
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
