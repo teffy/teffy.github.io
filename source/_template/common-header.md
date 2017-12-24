@@ -1,5 +1,1 @@
----
-title: Headers
----
-
-## Quick Start
+或许缺的不是能力，而是一份坚持!
