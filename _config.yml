@@ -83,3 +83,7 @@ deploy:
   type: git
   repository: https://github.com/teffy/teffy.github.io.git
   branch: master
+
+include_markdown:
+    dir: source/_template
+    verbose : true       
