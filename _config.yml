@@ -71,6 +71,16 @@ pagination_dir: page
 
 # Extensions
 ## Plugins: https://hexo.io/plugins/
+plugins:
+  hexo-generator-sitemap
+  hexo-generator-baidu-sitemap
+
+sitemap:
+  path: sitemap.xml
+#baidusitemap:
+#  path: baidusitemap.xml
+
+
 ## Themes: https://hexo.io/themes/
 # theme: landscape
 theme: hexo-theme-next
@@ -92,3 +102,5 @@ search:
   field: post
   format: html
   limit: 10000
+
+
