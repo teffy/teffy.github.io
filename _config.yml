@@ -26,7 +26,7 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
-
+  -googlefc18c08f57ddc580.html
 # Writing
 new_post_name: :title.md # File name of new posts
 default_layout: post
@@ -93,14 +93,21 @@ deploy:
   type: git
   repository: https://github.com/teffy/teffy.github.io.git
   branch: master
+#deploy:
+##  type: baidu_url_submitter
 
 include_markdown:
     dir: source/_template
     verbose : true
+
 search:
   path: search.xml
   field: post
   format: html
   limit: 10000
 
-
+baidu_url_submit:
+  count: 100 # 提交最新的一个链接
+  host: teffy.me # 在百度站长平台中注册的域名
+  token: wKlnhURVLKuPNNC0 # 请注意这是您的秘钥， 所以请不要把博客源代码发布在公众仓库里!
+  path: baidu_urls.txt # 文本文档的地址， 新链接会保存在此文本文档里

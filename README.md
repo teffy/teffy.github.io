@@ -13,6 +13,8 @@ npm install hexo-include-markdown --save
 # sitemap
 npm install hexo-generator-sitemap --save-dev
 npm install hexo-generator-baidu-sitemap --save-dev
+# baidu url submit
+npm install hexo-baidu-url-submit --save
 # wordcount
 npm i hexo-wordcount --save
 ```
