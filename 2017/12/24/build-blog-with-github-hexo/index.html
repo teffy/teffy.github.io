@@ -103,19 +103,19 @@
 
 
 
-<meta name="description" content="本文内容包括：环境准备：git npm nodejs ,hexogithubhexo branch本地博客config hexo环境，然后push到远程next主题git submodulegithub sync fork 项目config随意切换环境写博客绑定域名 需要了解什么：熟悉git 命令，github基本操作">
+<meta name="description" content="本文内容包括：1、基于 github hexo 搭建博客2、基于 git branch 来管理 hexo 环境3、基于 git submodule 管理主题基于以上3点，用一个 github repository 就既可以用来搭建博客，也可以用来管理 hexo 环境，又可以管理自己的主题配置，而更重要的是我们这样就解决了换一个工作空间之后需要重新配置一套 hexo环境的麻烦问题。另外还有：4、使用">
 <meta property="og:type" content="article">
-<meta property="og:title" content="手把手教你用github+hexo建博客">
+<meta property="og:title" content="基于 github+hexo 搭建个人博客">
 <meta property="og:url" content="http://teffy.me/2017/12/24/build-blog-with-github-hexo/index.html">
 <meta property="og:site_name" content="Teffy">
-<meta property="og:description" content="本文内容包括：环境准备：git npm nodejs ,hexogithubhexo branch本地博客config hexo环境，然后push到远程next主题git submodulegithub sync fork 项目config随意切换环境写博客绑定域名 需要了解什么：熟悉git 命令，github基本操作">
+<meta property="og:description" content="本文内容包括：1、基于 github hexo 搭建博客2、基于 git branch 来管理 hexo 环境3、基于 git submodule 管理主题基于以上3点，用一个 github repository 就既可以用来搭建博客，也可以用来管理 hexo 环境，又可以管理自己的主题配置，而更重要的是我们这样就解决了换一个工作空间之后需要重新配置一套 hexo环境的麻烦问题。另外还有：4、使用">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://p1cycpoti.bkt.clouddn.com/blog/imgs/change_default_branch.png">
 <meta property="og:image" content="http://p1cycpoti.bkt.clouddn.com/blog/imgs/repeat_dir.png">
-<meta property="og:updated_time" content="2018-01-07T08:30:39.488Z">
+<meta property="og:updated_time" content="2018-01-04T10:12:13.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="手把手教你用github+hexo建博客">
-<meta name="twitter:description" content="本文内容包括：环境准备：git npm nodejs ,hexogithubhexo branch本地博客config hexo环境，然后push到远程next主题git submodulegithub sync fork 项目config随意切换环境写博客绑定域名 需要了解什么：熟悉git 命令，github基本操作">
+<meta name="twitter:title" content="基于 github+hexo 搭建个人博客">
+<meta name="twitter:description" content="本文内容包括：1、基于 github hexo 搭建博客2、基于 git branch 来管理 hexo 环境3、基于 git submodule 管理主题基于以上3点，用一个 github repository 就既可以用来搭建博客，也可以用来管理 hexo 环境，又可以管理自己的主题配置，而更重要的是我们这样就解决了换一个工作空间之后需要重新配置一套 hexo环境的麻烦问题。另外还有：4、使用">
 <meta name="twitter:image" content="http://p1cycpoti.bkt.clouddn.com/blog/imgs/change_default_branch.png">
 
 
@@ -152,7 +152,7 @@
 
 
 
-  <title>手把手教你用github+hexo建博客 | Teffy</title>
+  <title>基于 github+hexo 搭建个人博客 | Teffy</title>
   
 
 
@@ -370,7 +370,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">手把手教你用github+hexo建博客</h1>
+          <h1 class="post-title" itemprop="name headline">基于 github+hexo 搭建个人博客</h1>
         
 
         <div class="post-meta">
@@ -388,19 +388,7 @@
             
 
             
-              <span class="post-meta-divider">|</span>
-            
 
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-check-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">更新于&#58;</span>
-              
-              <time title="更新于" itemprop="dateModified" datetime="2018-01-07T16:30:39+08:00">
-                2018-01-07
-              </time>
             
           </span>
 
@@ -421,6 +409,25 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,915
+                </span>
+              
+
+              
+
+              
+            </div>
+          
 
           
 
@@ -437,43 +444,9 @@
       
 
       
-        <p>本文内容包括：<br>环境准备：git npm nodejs ,hexo<br>github<br>hexo branch<br>本地博客<br>config hexo环境，然后push到远程<br>next主题<br>git submodule<br>github sync fork 项目<br>config<br>随意切换环境写博客<br>绑定域名</p>
-<p>需要了解什么：熟悉git 命令，github基本操作</p>
+        <p>本文内容包括：<br>1、基于 github hexo 搭建博客<br>2、基于 git branch 来管理 hexo 环境<br>3、基于 git submodule 管理主题<br>基于以上3点，用一个 github repository 就既可以用来搭建博客，也可以用来管理 hexo 环境，又可以管理自己的主题配置，而更重要的是我们这样就解决了换一个工作空间之后需要重新配置一套 hexo环境的麻烦问题。<br>另外还有：<br>4、使用 github sync 使自己 forked 的主题 repository 和主仓库保持同步<br>5、绑定域名</p>
+<p>环境准备：git npm nodejs hexo<br>知识准备：熟悉 git 命令，github 基本操作</p>
 <a id="more"></a>
-<ul>
-<li><a href="#创建一个 github.io 仓库管理 blog 分支和 hexo 分支">创建一个 github.io 仓库管理 blog 分支和 hexo 分支</a><ul>
-<li><a href="#创建一个github.io仓库并创建hexo分支">创建一个github.io仓库并创建hexo分支</a></li>
-<li><a href="#设置hexo分支为主分支">设置hexo分支为主分支</a></li>
-</ul>
-</li>
-<li><a href="#本地搭建博客">本地搭建博客</a><ul>
-<li><a href="#hexo初始化">hexo初始化</a></li>
-<li><a href="#测试本地博客">测试本地博客</a></li>
-<li><a href="#测试一下发布 blog">测试一下发布 blog</a></li>
-<li><a href="#提交hexo环境到github">提交hexo环境到github</a></li>
-<li><a href="#换一个工作空间继续写博客">换一个工作空间继续写博客</a></li>
-</ul>
-</li>
-<li><a href="#使用git submodule 管理主题">使用git submodule 管理主题</a><ul>
-<li><a href="#添加 git submodule">添加 git submodule</a></li>
-<li><a href="#管理主题仓库">管理主题仓库</a></li>
-<li><a href="#换工作空间之后管理主题">换工作空间之后管理主题</a></li>
-<li><a href="#同步主题主仓库的更新">同步主题主仓库的更新</a></li>
-</ul>
-</li>
-<li><a href="#写博客">写博客</a><ul>
-<li><a href="#markdown include 插件">markdown include 插件</a></li>
-</ul>
-</li>
-<li><a href="#绑定域名">绑定域名</a><ul>
-<li><a href="#买个域名">买个域名</a></li>
-<li><a href="#配置 github 仓库">配置 github 仓库</a></li>
-<li><a href="#配置 DNS">配置 DNS</a></li>
-<li><a href="#配置 dnspod">配置 dnspod</a></li>
-</ul>
-</li>
-</ul>
-<p>[TOC]</p>
 <h2 id="创建一个-github-io-仓库管理-blog-分支和-hexo-分支"><a href="#创建一个-github-io-仓库管理-blog-分支和-hexo-分支" class="headerlink" title="创建一个 github.io 仓库管理 blog 分支和 hexo 分支"></a>创建一个 github.io 仓库管理 blog 分支和 hexo 分支</h2><p>你可能会问为啥要 blog 分支和 hexo 分支，因为我想仅使用一个 git 仓库就可以完成写博客、发布博客、存储的的需求，至于为什么，且往下看，一步一步你就会明白。</p>
 <h3 id="创建一个github-io仓库并创建hexo分支"><a href="#创建一个github-io仓库并创建hexo分支" class="headerlink" title="创建一个github.io仓库并创建hexo分支"></a>创建一个github.io仓库并创建hexo分支</h3><p>在 github上创建一个名为 teffy.github.io 的仓库，默认生成的 master 分支为我们博客存储的分支，再创建 hexo 分支用做写博客和发布博客环境的存储分支。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#在github 上创建 teffy.github.io，很简单</span><br><span class="line">git clone git@github.com:teffy/teffy.github.io.git</span><br><span class="line">cd teffy.github.io # 进入仓库根目录</span><br><span class="line">git checkout -b hexo # 创建 hexo 分支</span><br><span class="line">git push origin hexo:hexo # push hexo 分支到远程</span><br></pre></td></tr></table></figure></p>
 <h3 id="设置hexo分支为主分支"><a href="#设置hexo分支为主分支" class="headerlink" title="设置hexo分支为主分支"></a>设置hexo分支为主分支</h3><p><img src="http://p1cycpoti.bkt.clouddn.com/blog/imgs/change_default_branch.png" alt=""></p>
@@ -596,7 +569,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://teffy.me/2017/12/24/build-blog-with-github-hexo/" title="手把手教你用github+hexo建博客">http://teffy.me/2017/12/24/build-blog-with-github-hexo/</a>
+    <a href="http://teffy.me/2017/12/24/build-blog-with-github-hexo/" title="基于 github+hexo 搭建个人博客">http://teffy.me/2017/12/24/build-blog-with-github-hexo/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
