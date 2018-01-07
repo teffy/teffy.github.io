@@ -1,49 +1,24 @@
 ---
-title: 手把手教你用github+hexo建博客
+title: 基于 github+hexo 搭建个人博客
 date: 2017-12-24 22:42:53
+updated: 2018-01-4 18:12:13
 tags:
+categories:
 ---
 
 本文内容包括：
-环境准备：git npm nodejs ,hexo
-github
-hexo branch
-本地博客
-config hexo环境，然后push到远程
-next主题
-git submodule
-github sync fork 项目
-config
-随意切换环境写博客
-绑定域名
+1、基于 github hexo 搭建博客
+2、基于 git branch 来管理 hexo 环境
+3、基于 git submodule 管理主题
+基于以上3点，用一个 github repository 就既可以用来搭建博客，也可以用来管理 hexo 环境，又可以管理自己的主题配置，而更重要的是我们这样就解决了换一个工作空间之后需要重新配置一套 hexo环境的麻烦问题。
+另外还有：
+4、使用 github sync 使自己 forked 的主题 repository 和主仓库保持同步
+5、绑定域名
 
-需要了解什么：熟悉git 命令，github基本操作
+环境准备：git npm nodejs hexo
+知识准备：熟悉 git 命令，github 基本操作
 
 <!-- more -->
-
-- [创建一个 github.io 仓库管理 blog 分支和 hexo 分支](#创建一个 github.io 仓库管理 blog 分支和 hexo 分支)
-    * [创建一个github.io仓库并创建hexo分支](#创建一个github.io仓库并创建hexo分支)
-    * [设置hexo分支为主分支](#设置hexo分支为主分支)
-- [本地搭建博客](#本地搭建博客)
-    * [hexo初始化](#hexo初始化)
-    * [测试本地博客](#测试本地博客)
-    * [测试一下发布 blog](#测试一下发布 blog)
-    * [提交hexo环境到github](#提交hexo环境到github)
-    * [换一个工作空间继续写博客](#换一个工作空间继续写博客)
-- [使用git submodule 管理主题](#使用git submodule 管理主题)
-    * [添加 git submodule](#添加 git submodule)
-    * [管理主题仓库](#管理主题仓库)
-    * [换工作空间之后管理主题](#换工作空间之后管理主题)
-    * [同步主题主仓库的更新](#同步主题主仓库的更新)
-- [写博客](#写博客)
-    * [markdown include 插件](#markdown include 插件)
-- [绑定域名](#绑定域名)
-    * [买个域名](#买个域名)
-    * [配置 github 仓库](#配置 github 仓库)
-    * [配置 DNS](#配置 DNS)
-    * [配置 dnspod](#配置 dnspod)
-
-[TOC]
 
 ## 创建一个 github.io 仓库管理 blog 分支和 hexo 分支
 

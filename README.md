@@ -13,6 +13,8 @@ npm install hexo-include-markdown --save
 # sitemap
 npm install hexo-generator-sitemap --save-dev
 npm install hexo-generator-baidu-sitemap --save-dev
+# wordcount
+npm i hexo-wordcount --save
 ```
 
 使用markdown include插件
@@ -40,3 +42,6 @@ https://imys.net/20150514/hexo-toc.html
 
 版权
 http://www.crocutax.com/2017/05/20/Hexo%E6%8C%81%E7%BB%AD%E4%BC%98%E5%8C%96-%E5%9C%A8%E6%96%87%E7%AB%A0%E5%B0%BE%E9%83%A8%E6%B7%BB%E5%8A%A0%E7%89%88%E6%9D%83%E5%A3%B0%E6%98%8E%E4%BF%A1%E6%81%AF/
+
+http://www.bijishequ.com/detail/392652?p=56-51-64
+http://www.itfanr.cc/2017/12/06/hexo-blog-optimization/
