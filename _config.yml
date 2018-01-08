@@ -90,11 +90,10 @@ avatar: http://p1cycpoti.bkt.clouddn.com/blog/imgs/avatar.png
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type: git
+- type: git
   repository: https://github.com/teffy/teffy.github.io.git
   branch: master
-#deploy:
-##  type: baidu_url_submitter
+- type: baidu_url_submitter
 
 include_markdown:
     dir: source/_template
