@@ -93,7 +93,6 @@ deploy:
 - type: git
   repository: https://github.com/teffy/teffy.github.io.git
   branch: master
-- type: baidu_url_submitter
 
 include_markdown:
     dir: source/_template
