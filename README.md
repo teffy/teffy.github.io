@@ -47,3 +47,11 @@ http://www.crocutax.com/2017/05/20/Hexo%E6%8C%81%E7%BB%AD%E4%BC%98%E5%8C%96-%E5%
 
 http://www.bijishequ.com/detail/392652?p=56-51-64
 http://www.itfanr.cc/2017/12/06/hexo-blog-optimization/
+
+fancybox-thumbs.css ENOSPC:
+```
+先测试npm dedupe
+不行再试这个
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+http://www.sail.name/2017/10/31/ENOSPC-Error(Linux)-in-hexo/

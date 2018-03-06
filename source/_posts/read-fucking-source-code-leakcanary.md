@@ -1,14 +1,18 @@
 ---
-title: read_leakcanary_sorce_code
+title: read_fucking_source_code_leakcanary
 date: 2018-02-09 11:38:54
-tags:
+categories: 
+- read_fucking_source_code
+tags: 
+- read_fucking_source_code
+- leakcanary
 ---
 
 本文主要分享leakcanary的一些核心代码和一些流程分析。
 
 <!-- more -->
 
-# Read leakcanary sorce code 
+# Read fucking source code:leakcanary
 
 ## 关键代码
 ```

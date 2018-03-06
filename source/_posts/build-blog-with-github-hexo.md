@@ -2,8 +2,11 @@
 title: 基于 github+hexo 搭建个人博客
 date: 2017-12-24 22:42:53
 updated: 2018-01-4 18:12:13
-tags:
-categories:
+categories: 
+ - blog
+tags: 
+ - github
+ - hexo
 ---
 
 本文内容包括：
