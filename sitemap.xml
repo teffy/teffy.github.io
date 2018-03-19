@@ -2,6 +2,55 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://teffy.me/about/index.html</loc>
+    
+    <lastmod>2018-03-19T14:21:58.574Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://teffy.me/categories/index.html</loc>
+    
+    <lastmod>2018-03-19T14:21:58.574Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://teffy.me/tags/index.html</loc>
+    
+    <lastmod>2018-03-19T14:21:58.574Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://teffy.me/read-fucking-source-code-leakcanary.html</loc>
+    
+    <lastmod>2018-03-19T14:21:58.558Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://teffy.me/read-fucking-source-code-retrofit.html</loc>
+    
+    <lastmod>2018-03-19T14:21:58.558Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://teffy.me/read-fucking-source-code-lipland.html</loc>
+    
+    <lastmod>2018-03-19T14:21:58.558Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://teffy.me/read-fucking-source-code-hermeseventbus.html</loc>
+    
+    <lastmod>2018-03-19T14:21:58.554Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://teffy.me/build-blog-with-github-hexo.html</loc>
     
     <lastmod>2018-01-04T10:12:13.000Z</lastmod>

@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+<script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+<link href="//cdn.bootcss.com/pace/1.0.2/themes/pink/pace-theme-flash.css" rel="stylesheet">
+<style>
+    .pace .pace-progress {
+        background: #1E92FB; /*进度条颜色*/
+        height: 3px;
+    }
+    .pace .pace-progress-inner {
+         box-shadow: 0 0 10px #1E92FB, 0 0 5px     #1E92FB; /*阴影颜色*/
+    }
+    .pace .pace-activity {
+        border-top-color: #1E92FB;    /*上边框颜色*/
+        border-left-color: #1E92FB;    /*左边框颜色*/
+    }
+</style>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.ico?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.ico?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="read_fucking_source_code,retrofit," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文主要分享Lipland一些核心代码和一些流程分析。">
+<meta name="keywords" content="read_fucking_source_code,retrofit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="read-fucking-source-code-lipland">
+<meta property="og:url" content="http://teffy.me/read-fucking-source-code-lipland.html">
+<meta property="og:site_name" content="Teffy&#39;s Blog">
+<meta property="og:description" content="本文主要分享Lipland一些核心代码和一些流程分析。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-03-19T14:21:58.558Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="read-fucking-source-code-lipland">
+<meta name="twitter:description" content="本文主要分享Lipland一些核心代码和一些流程分析。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://teffy.me/read-fucking-source-code-lipland.html"/>
+
+
+
+
+
+  <title>read-fucking-source-code-lipland | Teffy's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Teffy's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">To be, or not to be, that is the question</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://teffy.me/read-fucking-source-code-lipland.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Teffy">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://p1cycpoti.bkt.clouddn.com/blog/imgs/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Teffy's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">read-fucking-source-code-lipland</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-14T15:20:08+08:00">
+                2018-03-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/read-fucking-source-code/" itemprop="url" rel="index">
+                    <span itemprop="name">read_fucking_source_code</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,903
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文主要分享Lipland一些核心代码和一些流程分析。</p>
+<a id="more"></a>
+<h1 id="Read-fucking-source-code-Lipland"><a href="#Read-fucking-source-code-Lipland" class="headerlink" title="Read fucking source code:Lipland"></a>Read fucking source code:Lipland</h1><h2 id="关键技术说明"><a href="#关键技术说明" class="headerlink" title="关键技术说明"></a>关键技术说明</h2><p>插件化的技术，大量的使用了hook技术，而hook过程就是利用java的反射和动态代理，替换原有类中的属性对象或者 hook 原有类中的方法，一般情况下，如果属性对象是非final Class，可以直接写一个类继承目标Class，然后重写一些关键方法的实现过程；如果属性对象是接口或者一个final的Class，就需要通过动态代理去hook 那些方法。</p>
+<p>第一种，替换属性对象，拿这个项目中的hook ActivityThread的Instrumentation为例：<br>通过ActivityThread对象和class反射根据fieldName获取Instrumentation Field，强转为Instrumentation，然后把Instrumentation的所有属性都通过反射clone赋值给我们自己写的InstrumentationHacker，然后把InstrumentationHacker再通过反射重新设置回给ActivityThread，这样就把Instrumentation替换成InstrumentationHacker。</p>
+<p>第二种，动态代理劫持方法,自己写一个InvocationHandler的实现类，在invoke方法中，通过方法名字的过滤，加上自己的逻辑处理，可以直接阻断原方法执行的逻辑，替换为自己的逻辑处理，简单的实例如下面的代码，我把MathOp接口中的sum方法劫持，把参数加大10<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">public void addition_isCorrect() throws Exception &#123;</span><br><span class="line">     MathOpImpl m = new MathOpImpl();</span><br><span class="line">     MathOp mi = (MathOp) Proxy.newProxyInstance(</span><br><span class="line">             MathOpImpl.class.getClassLoader(),</span><br><span class="line">             new Class&lt;?&gt;[]&#123;MathOp.class&#125;,</span><br><span class="line">             new MInvokeHandler(m));</span><br><span class="line">     System.out.println(mi.sum(10, 2));</span><br><span class="line">     assertEquals(4, 2 + 2);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> class MInvokeHandler implements InvocationHandler &#123;</span><br><span class="line">     MathOp mi;</span><br><span class="line">     public MInvokeHandler(MathOp mi) &#123;</span><br><span class="line">         this.mi = mi;</span><br><span class="line">     &#125;</span><br><span class="line">     @Override</span><br><span class="line">     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">         Object result = null;</span><br><span class="line">         System.out.println(&quot;before&quot;);</span><br><span class="line">         if (method.getName().contains(&quot;sum&quot;)) &#123;</span><br><span class="line">             int a = (int) args[0];</span><br><span class="line">             a += 10;</span><br><span class="line">             args[0] = a;</span><br><span class="line">             result = method.invoke(mi, args);</span><br><span class="line">         &#125; else &#123;</span><br><span class="line">             result = method.invoke(mi, args);</span><br><span class="line">         &#125;</span><br><span class="line">         System.out.println(&quot;after&quot;);</span><br><span class="line">         return result;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> interface MathOp &#123;</span><br><span class="line">     int sum(int a, int b);</span><br><span class="line">     int max(int a, int b);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> class MathOpImpl implements MathOp &#123;</span><br><span class="line">     public int sum(int a, int b) &#123;</span><br><span class="line">         return a + b;</span><br><span class="line">     &#125;</span><br><span class="line">     @Override</span><br><span class="line">     public int max(int a, int b) &#123;</span><br><span class="line">         return a &gt; b ? a : b;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p>拿这个项目中的hook ActivityThread的ActivityManager的关键方法startService为例，关键InvokeHandler代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public Object invoke(Object obj, Method method, Object[] args)</span><br><span class="line">		throws Throwable &#123;</span><br><span class="line">	if(hookHandler != null)&#123;</span><br><span class="line">		if(!hookHandler.onBefore(origin, method, args))</span><br><span class="line">				return hookHandler.result;</span><br><span class="line">	&#125;</span><br><span class="line">	Object result = null;</span><br><span class="line">	Throwable thr = null;</span><br><span class="line">	try&#123;</span><br><span class="line">		if(hookHandler != null)&#123;</span><br><span class="line">			result = hookHandler.invoke(origin,method, args);</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			result = method.invoke(origin, args);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;catch(Throwable th)&#123;</span><br><span class="line">		if(th instanceof InvocationTargetException)&#123;  </span><br><span class="line">               thr = ((InvocationTargetException) th).getTargetException();  </span><br><span class="line">           &#125;else&#123;  </span><br><span class="line">               //doXXX()  </span><br><span class="line">   			thr = th;</span><br><span class="line">           &#125;  </span><br><span class="line">	&#125;</span><br><span class="line">	try&#123;</span><br><span class="line">		if(hookHandler != null)&#123;</span><br><span class="line">			result = hookHandler.onAfter(origin, method, args, result,thr);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;catch(Exception e)&#123;</span><br><span class="line">		Log.e(TAG, e);</span><br><span class="line">	&#125;</span><br><span class="line">	if(thr != null)</span><br><span class="line">		throw thr;</span><br><span class="line">	return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>实现流程<br>1.插件初始化<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public static boolean init(Application app)&#123;</span><br><span class="line">    PluginHelper.app = app;</span><br><span class="line">    if (!isPluginsSupport()) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    //安装插件管理器，必须的步骤</span><br><span class="line">    PluginManager.setup(app);</span><br><span class="line">    PluginManager pluginManager = PluginManager.getInstance();</span><br><span class="line">    //开启调试模式，调试模式下，打开日志。</span><br><span class="line">    //不验证插件签名</span><br><span class="line">    pluginManager.setDebug(true);</span><br><span class="line">    pluginManager.setVerifySign(false);</span><br><span class="line">    //配置插件管理器，可选</span><br><span class="line">    configure();</span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>1.1 PluginManager初始化，pm.init(); ，然后 调用HostApplicationProxy.hook(app);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">private static boolean setup(final Application app,final boolean startPluginProcess,boolean installDefaultPlugin,boolean forceInstallDefaultPlugin)&#123;</span><br><span class="line">		HostGlobal.init(app);</span><br><span class="line">		// 4.0以下版本不支持</span><br><span class="line">		if (android.os.Build.VERSION.SDK_INT &lt; VERSION_CODES.ICE_CREAM_SANDWICH) &#123;</span><br><span class="line">			return false;</span><br><span class="line">		&#125;</span><br><span class="line">		if(!inited)&#123;</span><br><span class="line">			final PluginManager pm = PluginManager.getInstance();</span><br><span class="line">			pm.init();</span><br><span class="line">			HostApplicationProxy.hook(app);</span><br><span class="line">			pm.runInBackground(new Runnable() &#123;</span><br><span class="line">				@Override</span><br><span class="line">				public void run() &#123;</span><br><span class="line">					NetworkManager.getInstance(app);</span><br><span class="line">					app.registerComponentCallbacks(new ComponentCallbacks() &#123;、</span><br><span class="line">						@Override</span><br><span class="line">						public void onLowMemory() &#123;</span><br><span class="line">						&#125;</span><br><span class="line">						@Override</span><br><span class="line">						public void onConfigurationChanged(Configuration newConfig) &#123;</span><br><span class="line">							// 同步插件中资源的onConfigurationChanged事件</span><br><span class="line">							Map&lt;String, Plugin&gt; plugins = PluginManager.getInstance().getPlugins();</span><br><span class="line">							for (Plugin p : plugins.values()) &#123;</span><br><span class="line">								p.getRes().updateConfiguration(newConfig, app.getResources().getDisplayMetrics());</span><br><span class="line">							&#125;</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;);</span><br><span class="line">					if(pm.isMainProcess() &amp;&amp; startPluginProcess)&#123;</span><br><span class="line">						PluginHelper.startPluginProcess(null);</span><br><span class="line">					&#125;</span><br><span class="line"></span><br><span class="line">					if(pm.isPluginProcess()) &#123;</span><br><span class="line"></span><br><span class="line">//					if (installDefaultPlugin)</span><br><span class="line">//						pm.installDefaultPlugins(forceInstallDefaultPlugin);</span><br><span class="line">						pm.resetProxyActivitiesStatus();</span><br><span class="line">//						//加载有loadOnAppStarted标志的插件，该标志表示在应用启动时在后台将插件加载到内存</span><br><span class="line">//						//有这个标志的插件，启动相对会快一点，但是在没有启动时也会占用部分内存。</span><br><span class="line">//						pm.loadPluginOnAppStarted();</span><br><span class="line">							&#125;</span><br><span class="line">//					if(pm.isPluginProcess() &amp;&amp; startUpdate)&#123;</span><br><span class="line">//						pm.startUpdate();</span><br><span class="line">//					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;);</span><br><span class="line">			inited = true;</span><br><span class="line">		&#125;</span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">static void hook(final Application app)&#123;</span><br><span class="line">		activityThread = ActivityThread.currentActivityThread();</span><br><span class="line">		injectInstrumentation(activityThread);</span><br><span class="line">		/**</span><br><span class="line">		 * 挂钩系统回调</span><br><span class="line">		 */</span><br><span class="line">//		SystemCallbackHacker.hook(activityThread);</span><br><span class="line">		/**</span><br><span class="line">		 * 挂钩ActivityManager</span><br><span class="line">		 */</span><br><span class="line">//		hookActivityManager();</span><br><span class="line">		//策略一</span><br><span class="line">		//默认主进程不挂钩PackageManager</span><br><span class="line">		//也可以在启动完毕后，延迟挂钩，这样可以忽略性能影响</span><br><span class="line">//		if(!HostGlobal.isMainProcess())&#123;</span><br><span class="line">//			hookPackageManager();</span><br><span class="line">//		&#125;</span><br><span class="line">		//策略二</span><br><span class="line">		//主进程延迟500毫秒挂钩，等程序启动起来了再说</span><br><span class="line">		Runnable run = new Runnable() &#123;</span><br><span class="line">			@Override</span><br><span class="line">			public void run() &#123;</span><br><span class="line">				hookActivityManager();</span><br><span class="line">				IClipboardHacker.hook();</span><br><span class="line">				ITelephonyHacker.hook();</span><br><span class="line">				IMountServiceHacker.hook();</span><br><span class="line">				INotificationManagerHacker.hook();</span><br><span class="line">//				IAccessibilityManagerHacker.hook();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;;</span><br><span class="line">		initService(app);</span><br><span class="line">		hookPackageManager(app);</span><br><span class="line">		if(!HostGlobal.isMainProcess())&#123;</span><br><span class="line">			run.run();</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			new Handler().postDelayed(run, 500);</span><br><span class="line">		&#125;</span><br><span class="line">//		run.run();</span><br><span class="line">//		hookAppOpsManager();</span><br></pre></td></tr></table></figure>
+<p>1.2 PluginManager#init<br>1.2.1、初始化，用Application注册了加载插件的监听<br>1.2.2、初始化InstallManager，ActivityThread<br>1.2.3com.qihoo.plugin.install.InstallManager#InstallManager  初始化<br>1.2.3.1、初始化com.qihoo.plugin.update.UpdateManager，com.qihoo.plugin.update.UpdateManager#init<br>1.2.3.2、com.qihoo.plugin.install.InstallManager#initData</p>
+<p>1.3.1 hook ActivityThread的Instrumentation，替换为InstrumentationHacker,用来劫持startactivity一系列方法，启动代理Activity；<br>1.3.2 hook ActivityThread的ActivityManager中的关键方法<br>1.3.2.1 劫持startServic、bindService方法，在方法之前，经过一些判断，调用PluginManager.startService、bindService方法启动代理service；<br>1.3.2.2 劫持stopService、stopServiceToken、unbindService方法，同样的在方法之前经过一些判断，调用pluginManager.stopService、stopServiceToken、unbindService来处理代理启动的service;<br>1.3.2.3 劫持getIntentSender、getRunningAppProcesses、checkPermission、checkPermissionWithToken等方法<br>1.3.3 hook其他的一些点<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IClipboardHacker.hook();</span><br><span class="line">ITelephonyHacker.hook();</span><br><span class="line">IMountServiceHacker.hook();</span><br><span class="line">INotificationManagerHacker.hook();</span><br></pre></td></tr></table></figure></p>
+<p>1.3.4 hook PackageManager<br>1.3.4.1 hook getPackageInfo方法用来处理插件的包信息，如果是宿主包名走原生逻辑，如果是插件，调用pluginManager.getInstallManager()来获取插件包信息<br>1.3.4.2 hook getActivityInfo 方法 处理Activity的信息<br>1.3.4.3 hook getApplicationInfo 方法 处理插件的 Application的信息<br>1.3.4.4 hook queryIntentActivities 方法 处理查询activity的信息，扩展查询插件包里的activity</p>
+<p>1.4 启动插件进程 PluginHelper.startPluginProcess(null);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">pm.runInBackground(new Runnable() &#123;</span><br><span class="line">				@Override</span><br><span class="line">				public void run() &#123;</span><br><span class="line">					NetworkManager.getInstance(app);</span><br><span class="line">					app.registerComponentCallbacks(new ComponentCallbacks() &#123;</span><br><span class="line">						@Override</span><br><span class="line">						public void onLowMemory() &#123;</span><br><span class="line"></span><br><span class="line">						&#125;</span><br><span class="line">						@Override</span><br><span class="line">						public void onConfigurationChanged(Configuration newConfig) &#123;</span><br><span class="line">							// 同步插件中资源的onConfigurationChanged事件</span><br><span class="line">							Map&lt;String, Plugin&gt; plugins = PluginManager.getInstance().getPlugins();</span><br><span class="line">							for (Plugin p : plugins.values()) &#123;</span><br><span class="line">								p.getRes().updateConfiguration(newConfig, app.getResources().getDisplayMetrics());</span><br><span class="line">							&#125;</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;);</span><br><span class="line">					if(pm.isMainProcess() &amp;&amp; startPluginProcess)&#123;</span><br><span class="line">						PluginHelper.startPluginProcess(null);</span><br><span class="line">					&#125;</span><br></pre></td></tr></table></figure></p>
+<p>1.4.1 启动 PluginProcessStartup这个service，在service内部去加载插件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pluginManager.installDefaultPlugins(false);-&gt;InstallManager#install(PluginInfo,syncPreproccess)</span><br><span class="line">pluginManager.handlePendingInstallPlugin();-&gt;UpdateManager#installPlugin-&gt;InstallManager#install(PluginInfo,syncPreproccess) </span><br><span class="line">pluginManager.preproccess();</span><br><span class="line">pluginManager.loadPluginOnAppStarted();</span><br></pre></td></tr></table></figure></p>
+<p>pluginManager.installDefaultPlugins(false);内部去解析xml，然后copy 插件apk到插件目录，以及一些检测插件安全，然后预加载一次apk，具体就是DexClassLoader加载一次，把宿主的classloader传过来，用于加载类，重写loadClass方法，在调用super.loadClass找不到类的时候，尝试使用宿主的classloader去加载类 clazz = hostClassLoader.loadClass(className);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">public class DexClassLoaderEx extends BaseDexClassLoader &#123;</span><br><span class="line">	</span><br><span class="line">	private final static String TAG = DexClassLoaderEx.class.getSimpleName();</span><br><span class="line"></span><br><span class="line">	private ClassLoader hostClassLoader;</span><br><span class="line">	private Context context;</span><br><span class="line">	private String tag;</span><br><span class="line">	</span><br><span class="line">	private Map&lt;String,Map&lt;String,LibInfo&gt;&gt; libs;</span><br><span class="line"></span><br><span class="line">	public DexClassLoaderEx(String tag,Map&lt;String,Map&lt;String,LibInfo&gt;&gt; libs,Context context,String dexPath, String optimizedDirectory,</span><br><span class="line">			String libraryPath, ClassLoader parent, ClassLoader hostLoader) &#123;</span><br><span class="line">		super(dexPath, new File(optimizedDirectory), libraryPath, parent);</span><br><span class="line">		</span><br><span class="line">		this.hostClassLoader = hostLoader;</span><br><span class="line">		this.context = context;</span><br><span class="line">		this.tag = tag;</span><br><span class="line">		this.libs = libs;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public Class&lt;?&gt; loadClassOrig(String className) throws ClassNotFoundException &#123;</span><br><span class="line">		return super.loadClass(className);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public String findLibrary(String name) &#123;</span><br><span class="line">		// TODO Auto-generated method stub</span><br><span class="line">		if(libs != null)&#123;</span><br><span class="line">			if(libs.containsKey(tag))&#123;</span><br><span class="line">				Map&lt;String,LibInfo&gt; pLibs = libs.get(tag);</span><br><span class="line">				if(pLibs.containsKey(name))</span><br><span class="line">					name = pLibs.get(name).mappingName;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		String filename = super.findLibrary(name);</span><br><span class="line">		if(filename == null)</span><br><span class="line">			return context.getApplicationInfo().nativeLibraryDir+&quot;/lib&quot;+name+&quot;.so&quot;;</span><br><span class="line">		else</span><br><span class="line">			return filename;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)</span><br><span class="line">	@Override</span><br><span class="line">	public Class&lt;?&gt; loadClass(String className) throws ClassNotFoundException &#123;</span><br><span class="line">		Log.d(TAG, &quot;loadClass [&quot; + className + &quot;]&quot;);</span><br><span class="line">		</span><br><span class="line">		Class&lt;?&gt; clazz = null;</span><br><span class="line">		try &#123;</span><br><span class="line">			try &#123;</span><br><span class="line">				clazz = super.loadClass(className);</span><br><span class="line">			&#125; catch (ClassNotFoundException e) &#123;</span><br><span class="line">				Log.d(TAG, &quot;Class not found [&quot; + className</span><br><span class="line">						+ &quot;],try to find from the host class loader&quot;);</span><br><span class="line">				clazz = hostClassLoader.loadClass(className);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; catch (java.lang.IllegalAccessError err) &#123;</span><br><span class="line">			Log.e(TAG, &quot;className= [&quot; + className + &quot;],cl=&quot; + this + &quot;,parent=&quot;</span><br><span class="line">					+ this.getParent());</span><br><span class="line">			Log.e(TAG, &quot;className= [&quot; + className + &quot;],hostClassLoader=&quot;</span><br><span class="line">					+ hostClassLoader + &quot;,parent&quot; + hostClassLoader.getParent());</span><br><span class="line">			throw err;</span><br><span class="line">		&#125;</span><br><span class="line">		return clazz;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>1.4.2<br>pluginManager.loadPluginOnAppStarted();-&gt;PluginManager#load(String, IPluginLoadListener) 加载插件<br>处理插件apk的所有四大组件信息，native 库，classloader，Resources<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DexClassLoaderEx classLoader = new DexClassLoaderEx(tag,libs,application,</span><br><span class="line">				apkPath, Config.getDexWorkPath(tag),</span><br><span class="line">				soPath, application.getClassLoader().getParent(),</span><br><span class="line">				application.getClassLoader());</span><br></pre></td></tr></table></figure></p>
+<p>处理Resources，PluginManager#loadResources(Context, String, boolean)，利用反射new一个AssetManager,然后把apk的目录通过反射调用addAssetPath方法加进去，然后new 一个Resources<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">Object assetMag;</span><br><span class="line">		Class&lt;?&gt; class_AssetManager = Class</span><br><span class="line">				.forName(&quot;android.content.res.AssetManager&quot;);</span><br><span class="line">		assetMag = class_AssetManager.newInstance();</span><br><span class="line">		Method method_addAssetPath = class_AssetManager.getDeclaredMethod(</span><br><span class="line">				&quot;addAssetPath&quot;, String.class);</span><br><span class="line">		method_addAssetPath.invoke(assetMag, path);</span><br><span class="line"></span><br><span class="line">		// 5.0系统单独处理WebView</span><br><span class="line">//		if (useWebView &amp;&amp; Build.VERSION.SDK_INT &gt;= 21) &#123;</span><br><span class="line">//</span><br><span class="line">//			try &#123;</span><br><span class="line">//				Class&lt;?&gt; cls = Class.forName(&quot;android.webkit.WebViewFactory&quot;);</span><br><span class="line">//				Method getProviderMethod = cls.getDeclaredMethod(&quot;getProvider&quot;,</span><br><span class="line">//						new Class[] &#123;&#125;);</span><br><span class="line">//				getProviderMethod.setAccessible(true);</span><br><span class="line">//</span><br><span class="line">//				getProviderMethod.invoke(cls);</span><br><span class="line">//				PackageInfo pi = (PackageInfo) RefUtil.getFieldValue(cls,</span><br><span class="line">//						&quot;sPackageInfo&quot;);</span><br><span class="line">//				// String webViewAssetPath = pi.applicationInfo.sourceDir;</span><br><span class="line">//				// String packageName = pi.packageName;</span><br><span class="line">//				// application.getPackageManager().getPackageInfo(packageName,</span><br><span class="line">//				// 0);</span><br><span class="line">//				// Context webViewContext =</span><br><span class="line">//				// application.createPackageContext(packageName,</span><br><span class="line">//				// Context.CONTEXT_INCLUDE_CODE |</span><br><span class="line">//				// Context.CONTEXT_IGNORE_SECURITY);</span><br><span class="line">//				method_addAssetPath.invoke(assetMag,</span><br><span class="line">//						pi.applicationInfo.sourceDir);</span><br><span class="line">//			&#125; catch (Exception e) &#123;</span><br><span class="line">//				e.printStackTrace();</span><br><span class="line">//			&#125;</span><br><span class="line">//		&#125;</span><br><span class="line"></span><br><span class="line">		Resources res = application.getResources();</span><br><span class="line">		return new Resources((AssetManager) assetMag,res.getDisplayMetrics(), res.getConfiguration())</span><br></pre></td></tr></table></figure></p>
+<p>1.3 检查插件更新 PluginManager#startUpdate(boolean, java.lang.Class&lt;? extends com.qihoo.plugin.update.UpdateFilter&gt;)<br>2 打开插件中的页面<br>2.1 正常调用 startActivity，然后在InstrumentationHacker中，已经hook了actiivty启动的相关方法，主要功能是，判断是否是插件apk中的activity，如果是调用pluginManager.makeActivityIntent创建代理activity ProxyActivity的Intent，会把插件中Activity中信息放在Intent中，最终通过反射调用Android原生的Instrumentation 的execStartActivity方法，把目标为Activity的Intent包装成代理Activity-ProxyActivity的Intent<br>2.2 hook newActivity方法，完全重写-&gt;createPluginActivity<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">private Activity createPluginActivity(Intent intent, String proxyClassName) &#123;</span><br><span class="line">		CodeTraceTS.begin(&quot;createPluginActivity&quot;);</span><br><span class="line">		Activity targetActivity = null;</span><br><span class="line">		PluginManager pluginManager = PluginManager.getInstance();</span><br><span class="line">		String pTag = null;</span><br><span class="line">		String targetClassName = null;</span><br><span class="line">		try &#123;</span><br><span class="line">			targetClassName = </span><br><span class="line">			intent.getStringExtra(PluginManager.KEY_TARGET_CLASS_NAME);</span><br><span class="line">			pTag = intent.getStringExtra(PluginManager.KEY_PLUGIN_TAG);</span><br><span class="line"></span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			Log.e(TAG, e);</span><br><span class="line">			PluginManager.getInstance().postCrash(e);</span><br><span class="line">		&#125;</span><br><span class="line">		if (pTag == null) &#123;</span><br><span class="line">			Log.e(TAG, &quot;createPluginActivity()::error,pTag=&quot; + pTag);</span><br><span class="line">		&#125;</span><br><span class="line">		Log.i(TAG, &quot;createPluginActivity()::pTag=&quot; + pTag);</span><br><span class="line">		com.qihoo.plugin.bean.Plugin plugin = pluginManager.getPlugin(pTag);</span><br><span class="line">		Log.i(TAG, &quot;createPluginActivity()::plugin=&quot; + plugin);</span><br><span class="line"></span><br><span class="line">		if (plugin == null) &#123;</span><br><span class="line">			Log.i(TAG, &quot;createPluginActivity()::Plugin is not loaded in the &quot;</span><br><span class="line">					+ (TextUtils.isEmpty(pluginManager.getName()) ? &quot;main&quot;</span><br><span class="line">							: &quot;[&quot; + pluginManager.getName() + &quot;]&quot;)</span><br><span class="line">					+ &quot; process,tag=&quot; + pTag);</span><br><span class="line">			plugin = pluginManager.load(pTag);</span><br><span class="line">			if (plugin == null)</span><br><span class="line">				return null;</span><br><span class="line">		&#125;</span><br><span class="line">		Log.i(TAG, &quot;createPluginActivity()::targetClassName=&quot; + targetClassName);</span><br><span class="line">		ActivityInfo ai = plugin.findActivity(targetClassName);</span><br><span class="line">//		if(ai.launchMode==ActivityInfo.LAUNCH_SINGLE_TASK</span><br><span class="line">//				|| ai.launchMode==ActivityInfo.LAUNCH_SINGLE_INSTANCE)&#123;</span><br><span class="line">//			PluginContextInfo pci = getPluginContextInfo(pTag, targetClassName);</span><br><span class="line">//			if (pci != null) &#123;</span><br><span class="line">//				Activity act = (Activity)pci.context;</span><br><span class="line">//				RefUtil.setFieldValue(act, &quot;mBase&quot;, null);</span><br><span class="line">//				RefUtil.setFieldValue(act.getFragmentManager(), &quot;mActivity&quot;, null);</span><br><span class="line">//				singleActivityCache.put(act, act);</span><br><span class="line">//				act.setIntent(intent);</span><br><span class="line">//				return (Activity)pci.context;</span><br><span class="line">//			&#125;</span><br><span class="line">//		&#125;</span><br><span class="line">		if (targetClassName != null) &#123;</span><br><span class="line">			Class&lt;?&gt; clz = null;</span><br><span class="line">			try &#123;</span><br><span class="line">				clz = plugin.getCl().loadClass(targetClassName);</span><br><span class="line">			&#125; catch (Exception e) &#123;</span><br><span class="line">				Log.e(TAG, e);</span><br><span class="line">				Log.e(TAG, &quot;createPluginActivity()::Didn&apos;t find class &quot;</span><br><span class="line">						+ targetClassName);</span><br><span class="line">				PluginManager.getInstance().postCrash(e);</span><br><span class="line">				return null;</span><br><span class="line">			&#125;</span><br><span class="line">			try &#123;</span><br><span class="line">				targetActivity = (Activity) clz.newInstance();</span><br><span class="line">				Log.i(TAG, &quot;createPluginActivity()::targetActivity=&quot;</span><br><span class="line">						+ targetActivity);</span><br><span class="line">			&#125; catch (Error e) &#123;</span><br><span class="line">				Log.e(TAG, &quot;createPluginActivity()::clz.newInstance(),error,e=&quot;</span><br><span class="line">						+ e);</span><br><span class="line">			&#125; catch (Exception e) &#123;</span><br><span class="line">				Log.e(TAG,</span><br><span class="line">						&quot;createPluginActivity()::clz.newInstance(),Exception,e=&quot;</span><br><span class="line">								+ e);</span><br><span class="line">			&#125;</span><br><span class="line">			// 缓存在当前正在运行的activity中</span><br><span class="line">			pluginContexts.put(targetActivity, new PluginContextInfo(</span><br><span class="line">					targetActivity, plugin, proxyClassName, ai, intent));</span><br><span class="line">			TimeStatistics.getOrNewStartTimeInfo(pTag).activity_newActivity = CodeTraceTS.end(&quot;createPluginActivity&quot;).time();</span><br><span class="line">			return targetActivity;</span><br><span class="line">		&#125;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通过Intent获取插件中的目标Activity的classname，和KEY_PLUGIN_TAG，然后通过pluginManager根据KEY_PLUGIN_TAG获取相关的Plugin插件信息和插件中的目标Activity的类名，插件信息如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public class Plugin &#123;</span><br><span class="line"></span><br><span class="line">	private String tag;</span><br><span class="line">	private String path;</span><br><span class="line">	private String srcPath;</span><br><span class="line"></span><br><span class="line">	private Resources res;</span><br><span class="line">	private DexClassLoaderEx cl;</span><br><span class="line">	private ActivityInfo[] activityInfo;</span><br><span class="line">	private IPlugin callback;</span><br><span class="line">	private Application pluginApplication;</span><br><span class="line">	private PackageInfo packageInfo;</span><br><span class="line">	private PluginPackage pluginPackage;</span><br><span class="line">	private LoadedApk loadedApk;</span><br><span class="line">	private List&lt;WeakReference&lt;Activity&gt;&gt; activities;</span><br></pre></td></tr></table></figure></p>
+<p>通过插件的classloader去加载出插件中目标Activity的Class，通过反射newInstance new出插件中的目标Activity，这样就把ProxyActivity替换成为真正的目标Activity<br>2.3 那Activity的生命周期呢，其实还是在InstrumentationHacker中，hook了Activity的生命周期的回调方法，如callActivityOnCreate，callActivityOnStart等方法，</p>
+
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>互联网讨饭新姿势（*>.<*）</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://p1cycpoti.bkt.clouddn.com/blog/imgs/wx_qrcode.png%3Fv=1" alt="Teffy 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://p1cycpoti.bkt.clouddn.com/blog/imgs/alipay_qrcode.png%3Fv=1" alt="Teffy 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Teffy
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://teffy.me/read-fucking-source-code-lipland.html" title="read-fucking-source-code-lipland">http://teffy.me/read-fucking-source-code-lipland.html</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/read-fucking-source-code/" rel="tag"><i class="fa fa-tag"></i> read_fucking_source_code</a>
+          
+            <a href="/tags/retrofit/" rel="tag"><i class="fa fa-tag"></i> retrofit</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/read-fucking-source-code-retrofit.html" rel="next" title="read-fucking-source-code-retrofit">
+                <i class="fa fa-chevron-left"></i> read-fucking-source-code-retrofit
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=2152417" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMjY1NS85MjE2"></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://p1cycpoti.bkt.clouddn.com/blog/imgs/avatar.png"
+                alt="Teffy" />
+            
+              <p class="site-author-name" itemprop="name">Teffy</p>
+              <p class="site-description motion-element" itemprop="description">To be, or not to be, that is the question</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/teffy" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Read-fucking-source-code-Lipland"><span class="nav-number">1.</span> <span class="nav-text">Read fucking source code:Lipland</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关键技术说明"><span class="nav-number">1.1.</span> <span class="nav-text">关键技术说明</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Teffy</span>
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId=64841915";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
