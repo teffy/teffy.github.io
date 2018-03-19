@@ -55,3 +55,33 @@ fancybox-thumbs.css ENOSPC:
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 ```
 http://www.sail.name/2017/10/31/ENOSPC-Error(Linux)-in-hexo/
+
+
+```
+Plugin loaded: hexo-baidu-url-submit
+Plugin loaded: hexo-generator-archive
+Plugin loaded: hexo-deployer-git
+Plugin loaded: hexo-generator-category
+Plugin loaded: hexo-generator-index
+Plugin loaded: hexo-generator-searchdb
+Plugin loaded: hexo-generator-tag
+Plugin loaded: hexo-include-markdown
+Plugin loaded: hexo-renderer-marked
+Plugin loaded: hexo-renderer-ejs
+Plugin loaded: hexo-renderer-stylus
+Plugin loaded: hexo-server
+Plugin loaded: hexo-wordcount
+Plugin loaded: hexo-generator-baidu-sitemap
+Plugin loaded: hexo-generator-sitemap
+Script loaded: themes/hexo-theme-next/scripts/merge-configs.js
+Script loaded: themes/hexo-theme-next/scripts/tags/button.js
+Script loaded: themes/hexo-theme-next/scripts/tags/center-quote.js
+Script loaded: themes/hexo-theme-next/scripts/merge.js
+Script loaded: themes/hexo-theme-next/scripts/tags/exturl.js
+Script loaded: themes/hexo-theme-next/scripts/tags/full-image.js
+Script loaded: themes/hexo-theme-next/scripts/tags/group-pictures.js
+Script loaded: themes/hexo-theme-next/scripts/tags/label.js
+Script loaded: themes/hexo-theme-next/scripts/tags/lazy-image.js
+Script loaded: themes/hexo-theme-next/scripts/tags/note.js
+Script loaded: themes/hexo-theme-next/scripts/tags/tabs.js
+```
