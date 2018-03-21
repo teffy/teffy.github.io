@@ -11,13 +11,14 @@ tags:
 本文主要分享Hermeseventbus和Eventbus一些核心代码和一些流程分析。
 
 <!-- more -->
-# Read fucking source code:hermeseventbus
+Read fucking source code:hermeseventbus
+
 Hermeseventbus和Eventbus区别在于Hermeseventbus利用Hermes这个Android IPC库来在多进程直接传递发送出来的event。
 接下来就先分析一下Eventbus的原理和流程，然后再来分析Hermeseventbus的原理和流程。
 
 ## Eventbus分析
 原理就是通过反射拿到注册的订阅者的class中有Subscribe注解的方法和相关信息，并缓存起来以便下次订阅的时候不用重新再反射一遍，然后把订阅者放进订阅集合中，有事件发送的时候直接调用mehtod.invoke方法调用订阅方法
-###1、注册
+### 1、注册
 ```
     public void register(Object subscriber) {
         Class<?> subscriberClass = subscriber.getClass();
@@ -113,7 +114,7 @@ final Method method;
         }
     }
 ```
-###2、发送event
+### 2、发送event
 post->postSingleEvent->postSingleEventForEventType->postToSubscription->invokeSubscriber or org.greenrobot.eventbus.HandlerPoster#enqueue->invokeSubscriber
 ```
     /** Posts the given event to the event bus. */

@@ -5,14 +5,14 @@ categories:
 - read_fucking_source_code
 tags: 
 - read_fucking_source_code
-- retrofit
+- Arouter
 ---
 
-本文主要分享Lipland一些核心代码和一些流程分析。
+本文主要分享Arouter一些核心代码和一些流程分析。
 
 <!-- more -->
 
-# Read fucking source code:Arouter
+Read fucking source code:Arouter
 
 
 ## 1、初始化
@@ -21,11 +21,10 @@ com.alibaba.android.arouter.launcher.ARouter#init
 com.alibaba.android.arouter.launcher._ARouter#init
 com.alibaba.android.arouter.core.LogisticsCenter#init
 
-com.alibaba.android.arouter.core.LogisticsCenter#loadRouterMap #这个方法，通过arouter-register实现编译代码之后自动注册路由信息，摒弃了之前的版本扫描dex文件解析class文件进行注册，也避免了造成的性能问题
-# [原理](https://github.com/luckybilly/AutoRegister)，[原理2](https://juejin.im/post/5a2b95b96fb9a045284669a9)
+com.alibaba.android.arouter.core.LogisticsCenter#loadRouterMap 
 ```
-
-初始化之后，会把所有注册的路由信息处理成 路由信息映射，
+loadRouterMap这个方法，通过arouter-register实现编译代码之后自动注册路由信息，摒弃了之前的版本扫描dex文件解析class文件进行注册，也避免了造成的性能问题，[原理](https://github.com/luckybilly/AutoRegister)，[原理2](https://juejin.im/post/5a2b95b96fb9a045284669a9)
+初始化之后，会把所有注册的路由信息处理成 路由信息映射
 ```
 com.alibaba.android.arouter.core.Warehouse
 class Warehouse {
@@ -158,92 +157,76 @@ com.alibaba.android.arouter.launcher._ARouter#navigation(java.lang.Class<? exten
             return null;
         }
     }
+```
 进行跳转
-com.alibaba.android.arouter.core.LogisticsCenter#completion
+```
+com.alibaba.android.arouter.facade.Postcard#navigation()
+com.alibaba.android.arouter.launcher.ARouter#navigation(Context mContext, Postcard postcard, int requestCode, NavigationCallback callback)
+com.alibaba.android.arouter.launcher._ARouter# navigation(final Context context, final Postcard postcard, final int requestCode, final NavigationCallback callback) 在这个方法中会处理拦截器的逻辑
+```
+最终到
+```
+com.alibaba.android.arouter.launcher._ARouter#_navigation
+  private Object _navigation(final Context context, final Postcard postcard, final int requestCode, final NavigationCallback callback) {
+        final Context currentContext = null == context ? mContext : context;
 
- public synchronized static void completion(Postcard postcard) {
-        if (null == postcard) {
-            throw new NoRouteFoundException(TAG + "No postcard!");
-        }
+        switch (postcard.getType()) {
+            case ACTIVITY:
+                // Build intent
+                final Intent intent = new Intent(currentContext, postcard.getDestination());
+                intent.putExtras(postcard.getExtras());
 
-        RouteMeta routeMeta = Warehouse.routes.get(postcard.getPath());
-        if (null == routeMeta) {    // Maybe its does't exist, or didn't load.
-            Class<? extends IRouteGroup> groupMeta = Warehouse.groupsIndex.get(postcard.getGroup());  // Load route meta.
-            if (null == groupMeta) {
-                throw new NoRouteFoundException(TAG + "There is no route match the path [" + postcard.getPath() + "], in group [" + postcard.getGroup() + "]");
-            } else {
-                // Load route and cache it into memory, then delete from metas.
-                try {
-                    if (ARouter.debuggable()) {
-                        logger.debug(TAG, String.format(Locale.getDefault(), "The group [%s] starts loading, trigger by [%s]", postcard.getGroup(), postcard.getPath()));
-                    }
-
-                    IRouteGroup iGroupInstance = groupMeta.getConstructor().newInstance();
-                    iGroupInstance.loadInto(Warehouse.routes);
-                    Warehouse.groupsIndex.remove(postcard.getGroup());
-
-                    if (ARouter.debuggable()) {
-                        logger.debug(TAG, String.format(Locale.getDefault(), "The group [%s] has already been loaded, trigger by [%s]", postcard.getGroup(), postcard.getPath()));
-                    }
-                } catch (Exception e) {
-                    throw new HandlerException(TAG + "Fatal exception when loading group meta. [" + e.getMessage() + "]");
+                // Set flags.
+                int flags = postcard.getFlags();
+                if (-1 != flags) {
+                    intent.setFlags(flags);
+                } else if (!(currentContext instanceof Activity)) {    // Non activity, need less one flag.
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 }
 
-                completion(postcard);   // Reload
-            }
-        } else {
-            postcard.setDestination(routeMeta.getDestination());
-            postcard.setType(routeMeta.getType());
-            postcard.setPriority(routeMeta.getPriority());
-            postcard.setExtra(routeMeta.getExtra());
+                // Navigation in main looper.
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (requestCode > 0) {  // Need start for result
+                            ActivityCompat.startActivityForResult((Activity) currentContext, intent, requestCode, postcard.getOptionsBundle());
+                        } else {
+                            ActivityCompat.startActivity(currentContext, intent, postcard.getOptionsBundle());
+                        }
 
-            Uri rawUri = postcard.getUri();
-            if (null != rawUri) {   // Try to set params into bundle.
-                Map<String, String> resultMap = TextUtils.splitQueryParameters(rawUri);
-                Map<String, Integer> paramsType = routeMeta.getParamsType();
+                        if ((-1 != postcard.getEnterAnim() && -1 != postcard.getExitAnim()) && currentContext instanceof Activity) {    // Old version.
+                            ((Activity) currentContext).overridePendingTransition(postcard.getEnterAnim(), postcard.getExitAnim());
+                        }
 
-                if (MapUtils.isNotEmpty(paramsType)) {
-                    // Set value by its type, just for params which annotation by @Param
-                    for (Map.Entry<String, Integer> params : paramsType.entrySet()) {
-                        setValue(postcard,
-                                params.getValue(),
-                                params.getKey(),
-                                resultMap.get(params.getKey()));
-                    }
-
-                    // Save params name which need auto inject.
-                    postcard.getExtras().putStringArray(ARouter.AUTO_INJECT, paramsType.keySet().toArray(new String[]{}));
-                }
-
-                // Save raw uri
-                postcard.withString(ARouter.RAW_URI, rawUri.toString());
-            }
-
-            switch (routeMeta.getType()) {
-                case PROVIDER:  // if the route is provider, should find its instance
-                    // Its provider, so it must implement IProvider
-                    Class<? extends IProvider> providerMeta = (Class<? extends IProvider>) routeMeta.getDestination();
-                    IProvider instance = Warehouse.providers.get(providerMeta);
-                    if (null == instance) { // There's no instance of this provider
-                        IProvider provider;
-                        try {
-                            provider = providerMeta.getConstructor().newInstance();
-                            provider.init(mContext);
-                            Warehouse.providers.put(providerMeta, provider);
-                            instance = provider;
-                        } catch (Exception e) {
-                            throw new HandlerException("Init provider failed! " + e.getMessage());
+                        if (null != callback) { // Navigation over.
+                            callback.onArrival(postcard);
                         }
                     }
-                    postcard.setProvider(instance);
-                    postcard.greenChannel();    // Provider should skip all of interceptors
-                    break;
-                case FRAGMENT:
-                    postcard.greenChannel();    // Fragment needn't interceptors
-                default:
-                    break;
-            }
-        }
-    }
+                });
 
+                break;
+            case PROVIDER:
+                return postcard.getProvider();
+            case BOARDCAST:
+            case CONTENT_PROVIDER:
+            case FRAGMENT:
+                Class fragmentMeta = postcard.getDestination();
+                try {
+                    Object instance = fragmentMeta.getConstructor().newInstance();
+                    if (instance instanceof Fragment) {
+                        ((Fragment) instance).setArguments(postcard.getExtras());
+                    } else if (instance instanceof android.support.v4.app.Fragment) {
+                        ((android.support.v4.app.Fragment) instance).setArguments(postcard.getExtras());
+                    }
+
+                    return instance;
+                } catch (Exception ex) {
+                    logger.error(Consts.TAG, "Fetch fragment instance error, " + TextUtils.formatStackTrace(ex.getStackTrace()));
+                }
+            case METHOD:
+            case SERVICE:
+            default:
+                return null;
+        }
+        return null;
 ```

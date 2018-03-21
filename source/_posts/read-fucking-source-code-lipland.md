@@ -5,15 +5,15 @@ categories:
 - read_fucking_source_code
 tags: 
 - read_fucking_source_code
-- retrofit
+- Lipland
 ---
 
 
 本文主要分享Lipland一些核心代码和一些流程分析。
 
 <!-- more -->
-# Read fucking source code:Lipland
-## 关键技术说明
+Read fucking source code:Lipland
+# 关键技术说明
 插件化的技术，大量的使用了hook技术，而hook过程就是利用java的反射和动态代理，替换原有类中的属性对象或者 hook 原有类中的方法，一般情况下，如果属性对象是非final Class，可以直接写一个类继承目标Class，然后重写一些关键方法的实现过程；如果属性对象是接口或者一个final的Class，就需要通过动态代理去hook 那些方法。
 
 第一种，替换属性对象，拿这个项目中的hook ActivityThread的Instrumentation为例：
@@ -106,8 +106,8 @@ tags:
 	}
 ```
 
-实现流程
-1.插件初始化
+# 实现流程
+## 1.插件初始化
 ```
     public static boolean init(Application app){
         PluginHelper.app = app;
@@ -397,7 +397,7 @@ Object assetMag;
 		return new Resources((AssetManager) assetMag,res.getDisplayMetrics(), res.getConfiguration())
 ```
 1.3 检查插件更新 PluginManager#startUpdate(boolean, java.lang.Class<? extends com.qihoo.plugin.update.UpdateFilter>)
-2 打开插件中的页面
+## 2 打开插件中的页面
 2.1 正常调用 startActivity，然后在InstrumentationHacker中，已经hook了actiivty启动的相关方法，主要功能是，判断是否是插件apk中的activity，如果是调用pluginManager.makeActivityIntent创建代理activity ProxyActivity的Intent，会把插件中Activity中信息放在Intent中，最终通过反射调用Android原生的Instrumentation 的execStartActivity方法，把目标为Activity的Intent包装成代理Activity-ProxyActivity的Intent
 2.2 hook newActivity方法，完全重写->createPluginActivity
 ```

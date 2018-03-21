@@ -12,7 +12,7 @@ tags:
 
 <!-- more -->
 
-# Read fucking source code:leakcanary
+Read fucking source code:leakcanary
 
 ## 关键代码
 ```
