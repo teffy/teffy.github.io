@@ -88,7 +88,7 @@
 
 
 
-  <meta name="keywords" content="read_fucking_source_code,retrofit," />
+  <meta name="keywords" content="read_fucking_source_code,Retrofit," />
 
 
 
@@ -100,14 +100,14 @@
 
 
 <meta name="description" content="本文主要分享Retrofit一些核心代码和一些流程分析。">
-<meta name="keywords" content="read_fucking_source_code,retrofit">
+<meta name="keywords" content="read_fucking_source_code,Retrofit">
 <meta property="og:type" content="article">
 <meta property="og:title" content="read-fucking-source-code-retrofit">
 <meta property="og:url" content="http://teffy.me/read-fucking-source-code-retrofit.html">
 <meta property="og:site_name" content="Teffy&#39;s Blog">
 <meta property="og:description" content="本文主要分享Retrofit一些核心代码和一些流程分析。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-03-19T14:21:58.558Z">
+<meta property="og:updated_time" content="2018-03-25T12:44:39.610Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="read-fucking-source-code-retrofit">
 <meta name="twitter:description" content="本文主要分享Retrofit一些核心代码和一些流程分析。">
@@ -405,7 +405,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  25
+                  1,150
                 </span>
               
 
@@ -432,7 +432,20 @@
       
         <p>本文主要分享Retrofit一些核心代码和一些流程分析。</p>
 <a id="more"></a>
-<h1 id="Read-fucking-source-code-Retrofit"><a href="#Read-fucking-source-code-Retrofit" class="headerlink" title="Read fucking source code:Retrofit"></a>Read fucking source code:Retrofit</h1>
+<p>Read fucking source code:Retrofit</p>
+<p>简单使用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Retrofit retrofit = new Retrofit.Builder()</span><br><span class="line">     .baseUrl(API_URL)</span><br><span class="line">     .addConverterFactory(GsonConverterFactory.create())</span><br><span class="line">     .build();</span><br><span class="line"> // Create an instance of our GitHub API interface.</span><br><span class="line"> GitHub github = retrofit.create(GitHub.class);</span><br><span class="line"> // Create a call instance for looking up Retrofit contributors.</span><br><span class="line"> Call&lt;List&lt;Contributor&gt;&gt; call = github.contributors(&quot;square&quot;, &quot;retrofit&quot;);</span><br><span class="line">  List&lt;Contributor&gt; contributors = call.execute().body();</span><br><span class="line"> for (Contributor contributor : contributors) &#123;</span><br><span class="line">   System.out.println(contributor.login + &quot; (&quot; + contributor.contributions + &quot;)&quot;);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">new Retrofit.Builder()</span><br><span class="line">        .baseUrl(API_URL)</span><br><span class="line">        .addConverterFactory(GsonConverterFactory.create())</span><br><span class="line">        .build();</span><br></pre></td></tr></table></figure>
+<p>组织参数构建出一个Retrofit，参数包括url，请求参数组装工程类，返回数据转换工程类。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">retrofit2.Retrofit#create</span><br><span class="line">public &lt;T&gt; T create(final Class&lt;T&gt; service) &#123;</span><br><span class="line">    Utils.validateServiceInterface(service);</span><br><span class="line">    if (validateEagerly) &#123;</span><br><span class="line">      eagerlyValidateMethods(service);</span><br><span class="line">    &#125;</span><br><span class="line">    return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class&lt;?&gt;[] &#123; service &#125;,</span><br><span class="line">        new InvocationHandler() &#123;</span><br><span class="line">          private final Platform platform = Platform.get();</span><br><span class="line"></span><br><span class="line">          @Override public Object invoke(Object proxy, Method method, @Nullable Object[] args)</span><br><span class="line">              throws Throwable &#123;</span><br><span class="line">            // If the method is a method from Object then defer to normal invocation.</span><br><span class="line">            if (method.getDeclaringClass() == Object.class) &#123;</span><br><span class="line">              return method.invoke(this, args);</span><br><span class="line">            &#125;</span><br><span class="line">            if (platform.isDefaultMethod(method)) &#123;</span><br><span class="line">              return platform.invokeDefaultMethod(method, service, proxy, args);</span><br><span class="line">            &#125;</span><br><span class="line">            ServiceMethod&lt;Object, Object&gt; serviceMethod =</span><br><span class="line">                (ServiceMethod&lt;Object, Object&gt;) loadServiceMethod(method);</span><br><span class="line">            OkHttpCall&lt;Object&gt; okHttpCall = new OkHttpCall&lt;&gt;(serviceMethod, args);</span><br><span class="line">            return serviceMethod.adapt(okHttpCall);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>方法会返回一个动态代理生成的 GitHub接口。<br>然后下面调用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Call&lt;List&lt;Contributor&gt;&gt; call = github.contributors(&quot;square&quot;, &quot;retrofit&quot;);</span><br></pre></td></tr></table></figure></p>
+<p>在动态代理中，执行method，先通过loadServiceMethod，在缓存中找出包装过Method的 ServiceMethod对象，ServiceMethod对象在初始化的时候，会把Retrofit中的所有参数和上面的数据转换的工程类对象都拿到，以及 接口中定义的方法上所携带的所有注解，包括方法注解，和参数注解，参数注解会转换为ParameterHandler的子类和注解的名字一样的子类名字，方便后面使用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">result = new ServiceMethod.Builder&lt;&gt;(this, method).build();</span><br><span class="line"></span><br><span class="line"> ServiceMethod(Builder&lt;R, T&gt; builder) &#123;</span><br><span class="line">    this.callFactory = builder.retrofit.callFactory();</span><br><span class="line">    this.callAdapter = builder.callAdapter;</span><br><span class="line">    this.baseUrl = builder.retrofit.baseUrl();</span><br><span class="line">    this.responseConverter = builder.responseConverter;</span><br><span class="line">    this.httpMethod = builder.httpMethod;</span><br><span class="line">    this.relativeUrl = builder.relativeUrl;</span><br><span class="line">    this.headers = builder.headers;</span><br><span class="line">    this.contentType = builder.contentType;</span><br><span class="line">    this.hasBody = builder.hasBody;</span><br><span class="line">    this.isFormEncoded = builder.isFormEncoded;</span><br><span class="line">    this.isMultipart = builder.isMultipart;</span><br><span class="line">    this.parameterHandlers = builder.parameterHandlers; // 方法中定义的参数的注解</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">   public ServiceMethod build() &#123;</span><br><span class="line">      callAdapter = createCallAdapter();</span><br><span class="line">      </span><br><span class="line">  private CallAdapter&lt;T, R&gt; createCallAdapter() &#123;</span><br><span class="line">      Type returnType = method.getGenericReturnType();</span><br><span class="line">      if (Utils.hasUnresolvableType(returnType)) &#123;</span><br><span class="line">        throw methodError(</span><br><span class="line">            &quot;Method return type must not include a type variable or wildcard: %s&quot;, returnType);</span><br><span class="line">      &#125;</span><br><span class="line">      if (returnType == void.class) &#123;</span><br><span class="line">        throw methodError(&quot;Service methods cannot return void.&quot;);</span><br><span class="line">      &#125;</span><br><span class="line">      Annotation[] annotations = method.getAnnotations();</span><br><span class="line">      try &#123;</span><br><span class="line">        //noinspection unchecked</span><br><span class="line">        return (CallAdapter&lt;T, R&gt;) retrofit.callAdapter(returnType, annotations);</span><br><span class="line">      &#125; catch (RuntimeException e) &#123; // Wide exception range because factories are user code.</span><br><span class="line">        throw methodError(e, &quot;Unable to create call adapter for %s&quot;, returnType);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>返回一个 DefaultCallAdapterFactory，然后封装为OkHttpCall，OkHttpCall提供了同步执行的方法或者异步执行的方法，和创建 okhttp3.Call 的方法 okhttp3.Call toCall(@Nullable Object… args)，而 toCall 方法中会有 okhttp3.Call.Factory callFactory;<br>最后<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">serviceMethod.adapt(okHttpCall);</span><br><span class="line">  T adapt(Call&lt;R&gt; call) &#123;</span><br><span class="line">    return callAdapter.adapt(call);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></p>
+<p>将请求转换为一个Call请求执行的代理对象，在这个例子中其实就是上面的OkHttpCall，还有其他的转换器，如RxJava2CallAdapter，会把请求转为一个Observable<response<r>&gt;，然后拿到这个observable，就可以按照Rxjava的使用方式来执行请求了 。<br>到这里动态代理的使命已经完成。<br>下面是真正的执行阶段<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Contributor&gt; contributors = call.execute().body();</span><br><span class="line"></span><br><span class="line">  @Override public Response&lt;T&gt; execute() throws IOException &#123;</span><br><span class="line">   okhttp3.Call call;</span><br><span class="line"></span><br><span class="line">   synchronized (this) &#123;</span><br><span class="line">     if (executed) throw new IllegalStateException(&quot;Already executed.&quot;);</span><br><span class="line">     executed = true;</span><br><span class="line"></span><br><span class="line">     if (creationFailure != null) &#123;</span><br><span class="line">       if (creationFailure instanceof IOException) &#123;</span><br><span class="line">         throw (IOException) creationFailure;</span><br><span class="line">       &#125; else if (creationFailure instanceof RuntimeException) &#123;</span><br><span class="line">         throw (RuntimeException) creationFailure;</span><br><span class="line">       &#125; else &#123;</span><br><span class="line">         throw (Error) creationFailure;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     call = rawCall;</span><br><span class="line">     if (call == null) &#123;</span><br><span class="line">       try &#123;</span><br><span class="line">         call = rawCall = createRawCall();</span><br><span class="line">       &#125; catch (IOException | RuntimeException | Error e) &#123;</span><br><span class="line">         throwIfFatal(e); //  Do not assign a fatal error to creationFailure.</span><br><span class="line">         creationFailure = e;</span><br><span class="line">         throw e;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   if (canceled) &#123;</span><br><span class="line">     call.cancel();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   return parseResponse(call.execute());</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></response<r></p>
+<p>createRawCall方法生成真正的 okhttp3.Call对象，其中又会调用到serviceMethod.toCall(args);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">private okhttp3.Call createRawCall() throws IOException &#123;</span><br><span class="line">  okhttp3.Call call = serviceMethod.toCall(args);</span><br><span class="line">  if (call == null) &#123;</span><br><span class="line">    throw new NullPointerException(&quot;Call.Factory returned null.&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">  return call;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">  okhttp3.Call toCall(@Nullable Object... args) throws IOException &#123;</span><br><span class="line">  RequestBuilder requestBuilder = new RequestBuilder(httpMethod, baseUrl, relativeUrl, headers,</span><br><span class="line">      contentType, hasBody, isFormEncoded, isMultipart);</span><br><span class="line">  @SuppressWarnings(&quot;unchecked&quot;) // It is an error to invoke a method with the wrong arg types.</span><br><span class="line">  ParameterHandler&lt;Object&gt;[] handlers = (ParameterHandler&lt;Object&gt;[]) parameterHandlers;</span><br><span class="line">  int argumentCount = args != null ? args.length : 0;</span><br><span class="line">  if (argumentCount != handlers.length) &#123;</span><br><span class="line">    throw new IllegalArgumentException(&quot;Argument count (&quot; + argumentCount</span><br><span class="line">        + &quot;) doesn&apos;t match expected count (&quot; + handlers.length + &quot;)&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">  for (int p = 0; p &lt; argumentCount; p++) &#123;</span><br><span class="line">    handlers[p].apply(requestBuilder, args[p]);</span><br><span class="line">  &#125;</span><br><span class="line">  return callFactory.newCall(requestBuilder.build());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RequestBuilder类，是具体请求参数的组装类，最后通过okhttp3.Call.Factory创建出okhttp3.Call<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">return parseResponse(call.execute());</span><br></pre></td></tr></table></figure></p>
+<p>解析okhttp请求返回的结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">T body = serviceMethod.toResponse(catchingBody);</span><br></pre></td></tr></table></figure></p>
+<p>通过serviceMethod.toResponse，内部通过调用一开始传进来的 Converter 工厂类将执行结果转为我们需要的结果实体类。</p>
+
       
     </div>
     
@@ -508,7 +521,7 @@
           
             <a href="/tags/read-fucking-source-code/" rel="tag"><i class="fa fa-tag"></i> read_fucking_source_code</a>
           
-            <a href="/tags/retrofit/" rel="tag"><i class="fa fa-tag"></i> retrofit</a>
+            <a href="/tags/Retrofit/" rel="tag"><i class="fa fa-tag"></i> Retrofit</a>
           
         </div>
       
@@ -616,17 +629,8 @@ var jiathis_config={
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -645,7 +649,7 @@ var jiathis_config={
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -667,7 +671,7 @@ var jiathis_config={
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -700,22 +704,6 @@ var jiathis_config={
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Read-fucking-source-code-Retrofit"><span class="nav-number">1.</span> <span class="nav-text">Read fucking source code:Retrofit</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
