@@ -2,10 +2,15 @@
 My blog powered with HEXO.
 
 ```
+sudo npm install hexo-cli -g 
 git clone git@github.com:teffy/teffy.github.io.git
 # submodule
 git submoudle init
 git submodule update
+npm install
+touch db.json
+hexo s
+
 # hexo
 npm install hexo --save
 # include-markdown
